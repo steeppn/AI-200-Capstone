@@ -5,11 +5,23 @@ az group create ^
     --location australiaeast 
 
 az deployment group create ^
+    --name deployment-template ^
     --resource-group aiagent-course-rg ^
-    --template-name deployment-template.bicep ^
-    --parameters coursePrefix=courseunit1
+    --template-file "%~dp0deployment-template.bicep" ^
+    --parameters coursePrefix=ai200stephen
 
 az deployment group show ^
     --resource-group aiagent-course-rg ^
     --name deployment-template ^
-    --query properties.output
+    --query properties.provisioningState ^
+    --output tsv
+
+echo Deployment Outputs:
+
+az deployment group show ^
+    --resource-group aiagent-course-rg ^
+    --name deployment-template ^
+    --query properties.outputs ^
+    --output json
+
+pause

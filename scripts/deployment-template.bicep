@@ -3,6 +3,16 @@ param aiFoundryName string = coursePrefix
 param aiProjectName string = '${coursePrefix}-proj'
 param llmDeploymentName string = '${coursePrefix}-llm-deployment'
 param location string = resourceGroup().location
+ 
+// LLM MODEL PARAMETERS
+// ==============================
+param modelCapacity int = 1
+param modelSkuName string = 'GlobalStandard'
+
+param modelName string = 'gpt-5-mini'
+param modelFormat string = 'OpenAI'
+param modelVersion string = '2025-08-07'
+// ==============================
 
 resource aiFoundry 'Microsoft.CognitiveServices/accounts@2025-06-01' = {
   name: aiFoundryName
@@ -35,14 +45,14 @@ resource llmModelDeployment 'Microsoft.CognitiveServices/accounts/deployments@20
   name: llmDeploymentName
   parent: aiFoundry
   sku:{
-    capacity: 1
-    name: 'GlobalStandard'
+    capacity: modelCapacity
+    name: modelSkuName
   }
   properties:{
     model:{
-      name: 'chatgpt-4.1-mini'
-      format: 'OpenAI'
-      version: '2025-04-14'
+      name: modelName
+      format: modelFormat
+      version: modelVersion
     }
   }
 }
