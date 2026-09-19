@@ -21,9 +21,12 @@ openai_client = OpenAI(
 
 refund_agent = Refund_Agent(
     openai_client = openai_client,
-    model_name = model_deployment_name,
+    model_deployment_name = model_deployment_name,
     config = config
 )
+
+def process_message(user_message: str) -> str | None:
+    return refund_agent.process_message(user_message)
 
 def interactive_loop():
     print("Session has now started, enter 'quit' or 'exit' to end session.")
@@ -49,9 +52,9 @@ def interactive_loop():
             print('Failed to get a response from model')
             continue
         
-        print ('\n' + 'RESPONSE: ')
-        print ('=' * 50)
-        print (reply)
+        print("\nRESPONSE:")
+        print("=" * 50)
+        print(reply)
 
 if __name__ == '__main__':
     interactive_loop()

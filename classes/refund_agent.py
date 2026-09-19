@@ -9,8 +9,6 @@ class Refund_Agent:
         self.config =  config
         self.model_deployment_name = model_deployment_name
         self.max_tokens = config['llm']['max_tokens']
-        self.temperature = config['llm']['temperature']
-        self.top_p = config['llm']['max_top_p']
         self.max_message_in_history = config['llm']['max_message_in_history']
 
     def process_message(
@@ -23,12 +21,9 @@ class Refund_Agent:
 
         try:
             response = self.openai_client.chat.completions.create(
-                model_name = self.model_deployment_name,
+                model = self.model_deployment_name,
                 messages = messages[-self.max_message_in_history :],
-                max_token = self.max_tokens,
-                temperature = self.temperature,
-                top_p = self.top_p
-                
+                max_completion_tokens = self.max_tokens,
             )
             reply = response.choices[0].message.content
         except Exception as error:
@@ -79,4 +74,4 @@ class Refund_Agent:
         """
         sections.append(behavour_instructions)
 
-        '\n'.join(sections)
+        return '\n'.join(sections)

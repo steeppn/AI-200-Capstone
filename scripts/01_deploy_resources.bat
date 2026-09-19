@@ -16,6 +16,7 @@ az deployment group show ^
     --query properties.provisioningState ^
     --output tsv
 
+
 echo Deployment Outputs:
 
 az deployment group show ^

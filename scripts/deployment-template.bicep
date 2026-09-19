@@ -2,6 +2,7 @@ param coursePrefix string
 param aiFoundryName string = coursePrefix
 param aiProjectName string = '${coursePrefix}-proj'
 param llmDeploymentName string = '${coursePrefix}-llm-deployment'
+param acrName string = '${coursePrefix}acr'
 param location string = resourceGroup().location
  
 // LLM MODEL PARAMETERS
@@ -28,6 +29,7 @@ resource aiFoundry 'Microsoft.CognitiveServices/accounts@2025-06-01' = {
     allowProjectManagement: true
     customSubDomainName: aiFoundryName
     disableLocalAuth: false
+    publicNetworkAccess: 'Enabled'
   }
 }
 
@@ -57,5 +59,17 @@ resource llmModelDeployment 'Microsoft.CognitiveServices/accounts/deployments@20
   }
 }
 
+resource acr 'Microsoft.ContainerRegistry/registries@2025-04-01' = {
+  name: acrName
+  location: location
+  sku:{
+    name: 'Basic'
+  }
+  properties:{
+    adminUserEnabled: false
+  }
+}
+
 output azure_llm_endpoint string = 'https://${aiFoundry.properties.customSubDomainName}.services.ai.azure.com/openai/v1'
 output llm_model_name string = llmModelDeployment.name
+output acr_login_server string = acr.properties.loginServer
