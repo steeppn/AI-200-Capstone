@@ -16,6 +16,30 @@ az deployment group show ^
     --query properties.provisioningState ^
     --output tsv
 
+az containerapp env create ^
+    --name ai200stephen-env ^
+    --resource-group aiagent-course-rg ^
+    --location australiaeast
+
+az acr build ^
+    --registry ai200stephenacr ^
+    --image refund-service:latest ^
+    --file "%~dp0..\Dockerfile" ^
+    "%~dp0.." ^
+    --no-logs
+
+az containerapp create ^
+    --name refund-agent-service ^
+    --resource-group aiagent-course-rg ^
+    --environment ai200stephen-env ^
+    --image ai200stephenacr.azurecr.io/refund-service:latest ^
+    --registry-server ai200stephenacr.azurecr.io ^
+    --system-assigned ^
+    --registry-identity system ^
+    --target-port 8080 ^
+    --ingress external
+
+    
 
 echo Deployment Outputs:
 
