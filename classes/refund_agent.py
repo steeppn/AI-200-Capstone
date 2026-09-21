@@ -3,13 +3,13 @@ class Refund_Agent:
             self,
             openai_client,
             model_deployment_name,
-            config,
+            llm_config,
     ):
         self.openai_client = openai_client
-        self.config =  config
+        self.llm_config =  llm_config
         self.model_deployment_name = model_deployment_name
-        self.max_tokens = config['llm']['max_tokens']
-        self.max_message_in_history = config['llm']['max_message_in_history']
+        self.max_tokens = llm_config['llm']['max_tokens']
+        self.max_message_in_history = llm_config['llm']['max_message_in_history']
 
     def process_message(
         self,

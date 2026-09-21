@@ -9,8 +9,8 @@ from classes.refund_agent import Refund_Agent
 azure_endpoint = os.getenv('AZURE_LLM_ENDPOINT')
 model_deployment_name = os.getenv('LLM_MODEL_NAME')
 
-with open ('config.yaml', 'r') as file:
-    config = yaml.safe_load(file)
+with open ('llm_config.yaml', 'r') as file:
+    llm_config = yaml.safe_load(file)
 
 credential = DefaultAzureCredential()
 bearer_token = get_bearer_token_provider(credential, 'https://ai.azure.com/.default')
@@ -22,7 +22,7 @@ openai_client = OpenAI(
 refund_agent = Refund_Agent(
     openai_client = openai_client,
     model_deployment_name = model_deployment_name,
-    config = config
+    llm_config = llm_config
 )
 
 def process_message(user_message: str) -> str | None:
