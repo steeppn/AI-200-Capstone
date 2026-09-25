@@ -6,7 +6,6 @@ COPY scripts/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY agent.py .
 COPY config.py .
 COPY llm_config.yaml .
 COPY main.py .

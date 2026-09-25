@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger("ai-agent")
+
 class Refund_Agent:
     def __init__(
             self,
@@ -10,8 +14,8 @@ class Refund_Agent:
         self.model_deployment_name = model_deployment_name
         self.max_tokens = llm_config['llm']['max_tokens']
         self.max_message_in_history = llm_config['llm']['max_message_in_history']
-
-    def process_message(
+    
+    async def process_message(
         self,
         user_message,
     ):
@@ -20,15 +24,15 @@ class Refund_Agent:
         messages.append({'role': 'user', 'content': user_message})
 
         try:
-            response = self.openai_client.chat.completions.create(
+            response = await self.openai_client.chat.completions.create(
                 model = self.model_deployment_name,
                 messages = messages[-self.max_message_in_history :],
                 max_completion_tokens = self.max_tokens,
             )
             reply = response.choices[0].message.content
         except Exception as error:
-            print (f'Encountered an error: {error}')
-            return None
+            logger.exception("Encountered an error while calling Azure OpenAI")
+            raise
         return reply
 
     def _system_message(
