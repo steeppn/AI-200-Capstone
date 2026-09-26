@@ -4,6 +4,7 @@ from config import Settings
 import yaml
 import logging
 
+
 from contextlib import asynccontextmanager
 
 from openai import AsyncOpenAI
@@ -47,7 +48,7 @@ async def lifespan(app: FastAPI):
         )
         logger.info("AsyncOpenAI client has been successfully initialized")
     else:
-        logger.error("Upstream configuration missing, UNREADY")
+        raise RuntimeError("Upstream configuration missing")
     yield
 
     if getattr(app.state, "openai_client", None):

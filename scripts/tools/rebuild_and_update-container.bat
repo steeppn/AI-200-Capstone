@@ -9,3 +9,9 @@ az containerapp update ^
   --name refund-agent-service ^
   --resource-group aiagent-course-rg ^
   --image ai200stephenacr.azurecr.io/refund-service:latest
+
+REM DUE TO USE NOW REMOVE REM AFTER
+  az containerapp update ^
+  --name refund-agent-service ^
+  --resource-group aiagent-course-rg ^
+  --yaml ../../probes.yaml

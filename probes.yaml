@@ -1,0 +1,23 @@
+properties:
+  template:
+    containers:
+      - name: refund-agent-service
+        image: ai200stephenacr.azurecr.io/refund-service:latest
+        probes:
+          - type: Liveness
+            httpGet:
+              path: /health/liveness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3 
+            
+          - type: Readiness
+            httpGet:
+              path: /health/readiness
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
