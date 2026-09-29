@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: refund-agent-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: refund-agent
+  ports:
+  - port: 80 
+    targetPort: 8080

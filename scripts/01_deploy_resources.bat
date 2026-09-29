@@ -39,9 +39,20 @@ az containerapp create ^
     --target-port 8080 ^
     --ingress external
 
-    
 
-echo Deployment Outputs:
+REM ====== Azure Kubernetes ======
+az aks create ^
+    --resource-group aiagent-course-rg ^
+    --name ai200stephen-aks ^
+    --node-count 2 ^
+    --node-vm-size Standard_D2as_v4 ^
+    --attach0-acr ai200stephenacr ^
+    --generate-ssh-keys 
+
+az aks get-credentials ^
+    --resource-group aiagent-course-rg ^
+    --name ai200stephen-aks
+REM ==============================
 
 az deployment group show ^
     --resource-group aiagent-course-rg ^
