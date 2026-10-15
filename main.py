@@ -4,12 +4,8 @@ from config import Settings
 import yaml
 import logging
 
-
 from contextlib import asynccontextmanager
-
-from openai import AsyncOpenAI
-from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
-from classes.refund_agent import Refund_Agent
+from classes.mock_refund_agent import MockRefundRequest
 
 settings = Settings()
 
@@ -28,34 +24,58 @@ async def lifespan(app: FastAPI):
     app.state._settings = settings
     app.state.openai_client = None
     app.state.refund_agent = None
-    if settings.AZURE_LLM_ENDPOINT and settings.LLM_MODEL_NAME:
-        logger.info("Initializing AsyncOpenAI client with provided configurations...")
 
-        credential = DefaultAzureCredential()
-        bearer_token = get_bearer_token_provider(credential, 'https://ai.azure.com/.default')
+    # --------- check if backend is on local/mock or prod/azure -----------
+    try:
+        if settings.LLM_BACKEND == "mock":
+            logger.info("Starting local mock backend")
+            app.state.refund_agent = MockRefundRequest()
+        elif settings.LLM_BACKEND == "azure":
+            if not settings.AZURE_LLM_ENDPOINT or not settings.LLM_MODEL_NAME:
+                raise RuntimeError(
+                    "Azure endpoint and model deployment name are required"
+                )
+            # ------- Import Azure dependecies only when using Azure --------
+            from openai import AsyncOpenAI
+            from azure.identity.aio import (
+                DefaultAzureCredential, get_bearer_token_provider, )
+            from classes.refund_agent import Refund_Agent
 
-        app.state.openai_client = AsyncOpenAI(
-            base_url=settings.AZURE_LLM_ENDPOINT,
-            api_key=bearer_token,
-        )
+            with open ("llm_config.yaml", "r") as file:
+                app.state.llm_config = yaml.safe_load(file)
 
-        app.state.credential = credential
+            logger.info("intializing Azure model client")
 
-        app.state.refund_agent = Refund_Agent(
-            openai_client=app.state.openai_client,
-            model_deployment_name=app.state._settings.LLM_MODEL_NAME,
-            llm_config=app.state.llm_config,
-        )
-        logger.info("AsyncOpenAI client has been successfully initialized")
-    else:
-        raise RuntimeError("Upstream configuration missing")
-    yield
+            credential = DefaultAzureCredential
+            bearer_token = get_bearer_token_provider(
+                credential, 'https://ai.azure.com/.default',)
 
-    if getattr(app.state, "openai_client", None):
-        await app.state.openai_client.close()
-        await app.state.credential.close()
+            app.state.openai_client = AsyncOpenAI(
+                base_url=settings.AZURE_LLM_ENDPOINT,
+                api_key=bearer_token,)
 
-    logger.info("Container shut down.")
+            app.state.credential  = credential
+
+            app.state.refund_agent = Refund_Agent(
+                openai_client=app.state.openai_client,
+                model_deployment_name=settings.LLM_MODEL_NAME
+                llm_config=app.state.llm_config,
+            )
+        else:
+            raise RuntimeError(
+                f"Unsupported LLM Backend {settings.LLM_BACKEND}"
+            )
+        
+        yield 
+
+    finally:
+        if getattr(app.state, "openai_client", None):
+                await app.state.openai_client.close()
+                await app.state.credential.close()
+
+        logger.info("Container Shutdown")
+            
+
 
 def create_app() -> FastAPI:
 
