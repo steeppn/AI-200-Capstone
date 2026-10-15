@@ -18,12 +18,11 @@ async def lifespan(app: FastAPI):
     "Handles startup and shutdown events"
     logger.info("Container booting up...")
 
-    with open ("llm_config.yaml", "r") as file:
-        app.state.llm_config = yaml.safe_load(file)
-
     app.state._settings = settings
     app.state.openai_client = None
     app.state.refund_agent = None
+
+    credential = None
 
     # --------- check if backend is on local/mock or prod/azure -----------
     try:

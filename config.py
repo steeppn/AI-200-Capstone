@@ -46,5 +46,6 @@ class Settings(BaseSettings):
                 "Production requires Azure endpoint "
                 "and model deployment name"
             )
+        return self
     
 

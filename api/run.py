@@ -14,7 +14,7 @@ async def echo (message_request: messageRequest, response: Response, request: Re
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         detail="Endpoint or settings not configured"
         )
-    if not settings.LLM_MODEL_NAME:
+    if settings.LLM_BACKEND == "azure" and not settings.LLM_MODEL_NAME:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="LLM model name is not set"
