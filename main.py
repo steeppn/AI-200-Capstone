@@ -58,7 +58,7 @@ async def lifespan(app: FastAPI):
 
             app.state.refund_agent = Refund_Agent(
                 openai_client=app.state.openai_client,
-                model_deployment_name=settings.LLM_MODEL_NAME
+                model_deployment_name=settings.LLM_MODEL_NAME,
                 llm_config=app.state.llm_config,
             )
         else:
